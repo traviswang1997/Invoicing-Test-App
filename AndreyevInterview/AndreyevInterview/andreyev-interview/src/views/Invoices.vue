@@ -13,6 +13,7 @@
         <th>ID</th>
         <th>Description</th>
         <th>Total Cost</th>
+        <th>Total Value of Invoice</th>
         <th></th>
       </thead>
       <tbody>
@@ -20,6 +21,7 @@
           <td>{{invoice.id}}</td>
           <td>{{invoice.description}}</td>
           <td>${{invoice.totalValue}}</td>
+          <td>${{invoice.totalBillable}}</td>
           <td>
             <router-link :to="{ 
               name: 'Invoice', 
@@ -44,7 +46,8 @@ export default defineComponent({
     const state = reactive({
       invoices: [],
       description: "",
-      totalValue: "0"
+      totalValue: "0",
+      totalBillable: "0",
     })
 
     function fetchInvoices() {
@@ -66,7 +69,8 @@ export default defineComponent({
         },
         body: JSON.stringify({
           description: state.description,
-          totalValue: Number(state.totalValue)
+          totalValue: Number(state.totalValue),
+          totalBillable: Number(state.totalBillable)
         })
       }).then(fetchInvoices)
     }

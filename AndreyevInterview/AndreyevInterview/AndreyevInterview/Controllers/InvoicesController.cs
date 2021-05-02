@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,6 +10,7 @@ namespace AndreyevInterview.Controllers
     public class InvoicesController : ControllerBase
     {
         private readonly AIDbContext _context;
+        List<decimal> total = new List<decimal>() { 0, 0 };
 
         public InvoicesController(AIDbContext context)
         {
@@ -21,6 +23,15 @@ namespace AndreyevInterview.Controllers
             return _context.Invoices.ToList();
         }
 
+        //return two types of cost in a list
+        [HttpGet("{id}/cost")]
+        public IEnumerable<decimal> GetInvoiceTotal(int id)
+        {
+            total[0] = _context.Invoices.Find(id).TotalValue;
+            total[1] = _context.Invoices.Find(id).TotalBillable;
+            return total;
+        }
+
         //Get total cost for all items
         [HttpGet("{id}/totalCost")]
         public decimal GetInvoiceTotalCost(int id)
@@ -29,11 +40,29 @@ namespace AndreyevInterview.Controllers
 
         }
 
+        //get total billable cost
+        [HttpGet("{id}/totalBillable")]
+        public decimal GetInvoiceTotalBillable(int id)
+        {
+            var lineItems = this.GetInvoiceLineItems(id);
+            decimal totalBillableCost = 0;
+            foreach (LineItem lineItem in lineItems)
+            {
+                if (lineItem.Billable == true)
+                {
+                    totalBillableCost += lineItem.Quantity * lineItem.Cost;
+                }
+            }
+            return totalBillableCost;
+        }
+
         [HttpPut]
         public Invoice CreateInvoice(InvoiceInput input)
         {
             var invoice = new Invoice();
             invoice.Description = input.Description;
+            invoice.TotalValue = input.TotalValue;
+            invoice.TotalBillable = input.TotalBillable;
             _context.Add(invoice);
             _context.SaveChanges();
             return invoice;
@@ -53,19 +82,51 @@ namespace AndreyevInterview.Controllers
             lineItem.Description = input.Description;
             lineItem.Quantity = input.Quantity;
             lineItem.Cost = input.Cost;
+            lineItem.Billable = input.Billable;
+
             _context.Add(lineItem);
 
             //Get totalvalue by adding from ef database
             decimal lineItemCost = lineItem.Cost * lineItem.Quantity;
             _context.Invoices.Find(id).TotalValue += lineItemCost;
+            _context.Invoices.Find(id).TotalBillable += lineItemCost; //update billable item value
             _context.SaveChanges();
             return lineItem;
+        }
+
+        //add billable to ef
+        [HttpPost("{invoiceId}/{id}")]
+        public Boolean ChangeBillable(int invoiceId, int id, LineItemInput input)
+        {
+            var lineItems = this.GetInvoiceLineItems(invoiceId);
+            foreach (LineItem lineItem in lineItems)
+            {
+                if (lineItem.Id == id)
+                {
+                    _context.LineItems.Find(id).Billable = input.Billable;
+                    decimal cost = lineItem.Cost * lineItem.Quantity;
+                    if (input.Billable == false)
+                    {
+                        _context.Invoices.Find(invoiceId).TotalBillable -= cost;
+                    }
+                    else
+                    {
+                        _context.Invoices.Find(invoiceId).TotalBillable += cost;
+                    }
+                    _context.SaveChanges();
+                    return _context.LineItems.Find(id).Billable;
+                }
+            }
+
+            return false;
         }
     }
 
     public class InvoiceInput
     {
         public string Description { get; set; }
+        public decimal TotalValue { get; set; }
+        public decimal TotalBillable { get; set; }
     }
 
     public class LineItemInput
@@ -73,5 +134,6 @@ namespace AndreyevInterview.Controllers
         public string Description { get; set; }
         public int Quantity { get; set; }
         public decimal Cost { get; set; }
+        public bool Billable { get; set; }//update billable state
     }
 }
