@@ -12,14 +12,19 @@
       <thead>
         <th>ID</th>
         <th>Description</th>
+        <th>Total Cost</th>
         <th></th>
       </thead>
       <tbody>
         <tr v-for="invoice in state.invoices" :key="invoice.id">
           <td>{{invoice.id}}</td>
           <td>{{invoice.description}}</td>
+          <td>${{invoice.totalValue}}</td>
           <td>
-            <router-link :to="{ name: 'Invoice', params: { id: invoice.id }}">
+            <router-link :to="{ 
+              name: 'Invoice', 
+              params: { id: invoice.id }
+              }">
               Open
             </router-link>
           </td>
@@ -38,7 +43,8 @@ export default defineComponent({
   setup() {
     const state = reactive({
       invoices: [],
-      description: ""
+      description: "",
+      totalValue: "0"
     })
 
     function fetchInvoices() {
@@ -59,7 +65,8 @@ export default defineComponent({
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          description: state.description
+          description: state.description,
+          totalValue: Number(state.totalValue)
         })
       }).then(fetchInvoices)
     }

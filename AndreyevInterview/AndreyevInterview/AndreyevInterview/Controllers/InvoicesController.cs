@@ -21,6 +21,14 @@ namespace AndreyevInterview.Controllers
             return _context.Invoices.ToList();
         }
 
+        //Get total cost for all items
+        [HttpGet("{id}/totalCost")]
+        public decimal GetInvoiceTotalCost(int id)
+        {
+            return _context.Invoices.Find(id).TotalValue;
+
+        }
+
         [HttpPut]
         public Invoice CreateInvoice(InvoiceInput input)
         {
@@ -46,6 +54,10 @@ namespace AndreyevInterview.Controllers
             lineItem.Quantity = input.Quantity;
             lineItem.Cost = input.Cost;
             _context.Add(lineItem);
+
+            //Get totalvalue by adding from ef database
+            decimal lineItemCost = lineItem.Cost * lineItem.Quantity;
+            _context.Invoices.Find(id).TotalValue += lineItemCost;
             _context.SaveChanges();
             return lineItem;
         }

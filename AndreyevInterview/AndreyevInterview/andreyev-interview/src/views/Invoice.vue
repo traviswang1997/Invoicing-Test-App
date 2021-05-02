@@ -4,8 +4,11 @@
 
     <h2>Invoice Details</h2>
 
-    <span>Invoice #{{$route.params.id}}</span>
-
+    <div>
+      Invoice 
+      <span style="font-weight:bold">#{{$route.params.id}}<br>
+      Invoice Total Cost: ${{state.totalValue}}</span>
+    </div>
     <h3>Line Items</h3>
 
     <table>
@@ -51,7 +54,8 @@ export default defineComponent({
       lineItems: [],
       description: "",
       quantity: "0",
-      cost: "0"
+      cost: "0",
+      totalValue: "0"
     })
 
     function fetchLineItems() {
@@ -61,7 +65,9 @@ export default defineComponent({
           "Content-Type": "application/json"
         },
       }).then((response) => {
-        response.json().then(lineItems => (state.lineItems = lineItems))
+        response.json().then(
+            lineItems => (state.lineItems = lineItems)
+          )
       })
     }
 
