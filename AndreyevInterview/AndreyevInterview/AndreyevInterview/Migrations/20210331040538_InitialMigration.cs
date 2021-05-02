@@ -12,7 +12,10 @@ namespace AndreyevInterview.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Description = table.Column<string>(type: "TEXT", nullable: false)
+                    Description = table.Column<string>(type: "TEXT", nullable: false),
+                    TotalValue = table.Column<decimal>(type: "TEXT", nullable: false),
+                    TotalBillable = table.Column<decimal>(type: "TEXT", nullable: false),
+                    NumberOfItem = table.Column<int>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -28,7 +31,8 @@ namespace AndreyevInterview.Migrations
                     InvoiceId = table.Column<int>(type: "INTEGER", nullable: false),
                     Description = table.Column<string>(type: "TEXT", nullable: true),
                     Quantity = table.Column<int>(type: "INTEGER", nullable: false),
-                    Cost = table.Column<decimal>(type: "TEXT", nullable: false)
+                    Cost = table.Column<decimal>(type: "TEXT", nullable: false),
+                    Billable = table.Column<bool>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {

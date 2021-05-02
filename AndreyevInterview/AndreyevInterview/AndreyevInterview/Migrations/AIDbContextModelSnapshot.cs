@@ -16,55 +16,70 @@ namespace AndreyevInterview.Migrations
                 .HasAnnotation("ProductVersion", "5.0.4");
 
             modelBuilder.Entity("AndreyevInterview.Invoice", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("INTEGER");
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
+                b.Property<string>("Description")
+                    .IsRequired()
+                    .HasColumnType("TEXT");
 
-                    b.HasKey("Id");
+                b.Property<decimal>("TotalValue")
+                    .IsRequired()
+                    .HasColumnType("TEXT");
 
-                    b.ToTable("Invoices");
-                });
+                b.Property<decimal>("TotalBillable")
+                    .IsRequired()
+                    .HasColumnType("TEXT");
 
-            modelBuilder.Entity("AndreyevInterview.LineItem", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                b.Property<int>("NumberOfItem")
+                    .IsRequired()
+                    .HasColumnType("TEXT");
 
-                    b.Property<decimal>("Cost")
-                        .HasColumnType("TEXT");
+                b.HasKey("Id");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("InvoiceId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("InvoiceId");
-
-                    b.ToTable("LineItems");
-                });
+                b.ToTable("Invoices");
+            });
 
             modelBuilder.Entity("AndreyevInterview.LineItem", b =>
-                {
-                    b.HasOne("AndreyevInterview.Invoice", "Invoice")
-                        .WithMany()
-                        .HasForeignKey("InvoiceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("INTEGER");
 
-                    b.Navigation("Invoice");
-                });
+                b.Property<decimal>("Cost")
+                    .HasColumnType("TEXT");
+
+                b.Property<string>("Description")
+                    .HasColumnType("TEXT");
+
+                b.Property<int>("InvoiceId")
+                    .HasColumnType("INTEGER");
+
+                b.Property<int>("Quantity")
+                    .HasColumnType("INTEGER");
+
+                b.Property<bool>("Billable")
+                    .HasColumnType("BOOLEAN");
+
+                b.HasKey("Id");
+
+                b.HasIndex("InvoiceId");
+
+                b.ToTable("LineItems");
+            });
+
+            modelBuilder.Entity("AndreyevInterview.LineItem", b =>
+            {
+                b.HasOne("AndreyevInterview.Invoice", "Invoice")
+                    .WithMany()
+                    .HasForeignKey("InvoiceId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+
+                b.Navigation("Invoice");
+            });
 #pragma warning restore 612, 618
         }
     }
