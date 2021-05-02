@@ -13,7 +13,7 @@
 
     <h3>Line Items</h3>
     
-    <table>
+    <b-table>
       <thead>
         <th>ID</th>
         <th>Description</th>
@@ -38,7 +38,7 @@
           </td>
         </tr>
       </tbody>
-    </table>
+    </b-table>
 
     <form @submit.prevent>
       <h4>Create Line Item</h4>
@@ -85,6 +85,7 @@ export default defineComponent({
           )
       });
 
+      //get cost for total cost,total billable cost.[0]total,[1]billable
       fetch(`http://localhost:5000/invoices/${props.id}` + '/cost', {
         method: "GET",
         headers: {

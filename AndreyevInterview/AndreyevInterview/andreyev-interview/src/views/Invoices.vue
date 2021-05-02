@@ -2,8 +2,12 @@
   <div class="home">
     <form @submit.prevent>
       <label for="invoices">Create a new invoice</label>
-      <input type="text" name="invoices" v-model="state.description" placeholder="Description" />
-      <button @click="createInvoice">Create Invoice</button>
+      <input type="text" name="invoices" v-model="state.description" placeholder="Description"/>
+      <div style="display:flex; justify-content:space-between">
+        <!-- endpoint for JSON report-->
+        <button @click="createInvoice" v-bind:disabled="!state.description">Create Invoice</button>
+        <button onclick="window.location='https://localhost:5001/invoices'">View Report</button>
+      </div>
     </form>
 
     <hr />
@@ -14,6 +18,7 @@
         <th>Description</th>
         <th>Total Cost</th>
         <th>Total Value of Invoice</th>
+        <th>Number Of Items</th>
         <th></th>
       </thead>
       <tbody>
@@ -22,11 +27,11 @@
           <td>{{invoice.description}}</td>
           <td>${{invoice.totalValue}}</td>
           <td>${{invoice.totalBillable}}</td>
+          <td>{{invoice.numberOfItem}}</td>
           <td>
-            <router-link :to="{ 
-              name: 'Invoice', 
-              params: { id: invoice.id }
-              }">
+            <router-link :to="{ name: 'Invoice', params: { 
+              id: invoice.id
+              }}">
               Open
             </router-link>
           </td>
@@ -48,6 +53,7 @@ export default defineComponent({
       description: "",
       totalValue: "0",
       totalBillable: "0",
+      numberOfItem: "0"
     })
 
     function fetchInvoices() {
@@ -70,7 +76,8 @@ export default defineComponent({
         body: JSON.stringify({
           description: state.description,
           totalValue: Number(state.totalValue),
-          totalBillable: Number(state.totalBillable)
+          totalBillable: Number(state.totalBillable),
+          numberOfItem: Number(state.numberOfItem)
         })
       }).then(fetchInvoices)
     }

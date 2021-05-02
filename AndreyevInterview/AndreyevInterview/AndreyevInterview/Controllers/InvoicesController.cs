@@ -20,7 +20,7 @@ namespace AndreyevInterview.Controllers
         [HttpGet]
         public IEnumerable<Invoice> GetInvoices()
         {
-            return _context.Invoices.ToList();
+            return _context.Invoices.ToList(); //update endpoint with number of items, total values, total billable cost.
         }
 
         //return two types of cost in a list
@@ -63,6 +63,7 @@ namespace AndreyevInterview.Controllers
             invoice.Description = input.Description;
             invoice.TotalValue = input.TotalValue;
             invoice.TotalBillable = input.TotalBillable;
+            invoice.NumberOfItem = 0;
             _context.Add(invoice);
             _context.SaveChanges();
             return invoice;
@@ -90,6 +91,7 @@ namespace AndreyevInterview.Controllers
             decimal lineItemCost = lineItem.Cost * lineItem.Quantity;
             _context.Invoices.Find(id).TotalValue += lineItemCost;
             _context.Invoices.Find(id).TotalBillable += lineItemCost; //update billable item value
+            _context.Invoices.Find(id).NumberOfItem++; //update number of items in invoice
             _context.SaveChanges();
             return lineItem;
         }
@@ -127,6 +129,7 @@ namespace AndreyevInterview.Controllers
         public string Description { get; set; }
         public decimal TotalValue { get; set; }
         public decimal TotalBillable { get; set; }
+        public decimal NumberOfItem { get; set; }
     }
 
     public class LineItemInput
